@@ -15,4 +15,7 @@ public class AreaScriptable : ScriptableObject
     public AreaScriptable south;
     public AreaScriptable east;
     public AreaScriptable west;
+
+    [Header("Interactables In the Area")]
+    public List<InteractableScriptableObject> items;
 }

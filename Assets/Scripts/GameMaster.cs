@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -8,6 +9,8 @@ public class GameMaster : MonoBehaviour
     static public GameMaster Instance;
 
     [SerializeField] private AreaScriptable startArea;
+    [SerializeField] private GameObject subjectPrefab;
+    [SerializeField] private GameObject subjectContentDrawer;
 
     private AreaScriptable currentArea;
 
@@ -46,6 +49,37 @@ public class GameMaster : MonoBehaviour
                 EnterArea(currentArea.west);
                 break;
         }
+    }
+
+    public void ExecutePlayerAction(PlayerActions.actions action, string subjectName)
+    {
+        foreach (InteractableScriptableObject i in currentArea.items)
+        {
+            if (i.objectName == subjectName)
+            {
+                switch (action)
+                {
+                    case PlayerActions.actions.inspect:
+                        TextWritter.Instance.WriteText(i.interactText + "\n");
+                        break;
+                    case PlayerActions.actions.grab:
+                        if (i is ItemScriptableObject)
+                        {
+                            TextWritter.Instance.WriteText(i.objectName + " added to the inventory." + "\n");
+                            SendToInventory(i as ItemScriptableObject);
+                        }
+                        break;
+                }
+            }
+        }
+
+        RemoveSubjects();
+    }
+
+    private void SendToInventory(ItemScriptableObject i)
+    {
+        currentArea.items.Remove(i);
+        PlayerActions.Instance.AddToInventory(i);
     }
 
     private void EnterArea(AreaScriptable newArea)
@@ -91,5 +125,45 @@ public class GameMaster : MonoBehaviour
         {
             TextWritter.Instance.WriteText(currentArea.west.areaName + " to the west." + "\n");
         }
+    }
+
+    public void PopulateWorldSubjects()
+    {
+        float delay = 0;
+        foreach (InteractableScriptableObject i in currentArea.items)
+        {
+            StartCoroutine(AddWorldSubject(delay, i));
+            delay += .1f;
+        }
+    }
+
+    private void RemoveSubjects()
+    {
+        float delay = 0;
+        GameObject currentSubject;
+        for (int i = subjectContentDrawer.transform.childCount - 1; i >= 0; i--)
+        {
+            currentSubject = subjectContentDrawer.transform.GetChild(i).gameObject;
+            StartCoroutine(RemoveSubject(delay, currentSubject));
+            delay += .1f;
+        }
+    }
+
+    IEnumerator AddWorldSubject(float seconds, InteractableScriptableObject currentSubject)
+    {
+        yield return new WaitForSeconds(seconds);
+        GameObject currentInstaceOfSubject;
+        currentInstaceOfSubject = Instantiate(subjectPrefab, subjectContentDrawer.transform);
+        currentInstaceOfSubject.GetComponent<PopulateSubject>().Populate(currentSubject.sprite, currentSubject.objectName);
+        currentInstaceOfSubject.GetComponentInChildren<ButtonMultipleSprites>().onClick.AddListener(() => PlayerActions.Instance.SelectFromSubjectDrawer(currentSubject.objectName));
+    }
+
+    IEnumerator RemoveSubject(float seconds, GameObject currentSubject)
+    {
+        yield return new WaitForSeconds(seconds);
+        currentSubject.GetComponent<Animator>().SetBool("Grow", false);
+        Debug.Log(seconds);
+        yield return new WaitForSeconds(.3f);
+        Destroy(currentSubject);
     }
 }

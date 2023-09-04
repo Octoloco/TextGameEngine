@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65d854bfe3484424b949c3369e31441f, type: 3}
-  m_Name: TestArea
+  m_Name: MirkwoodTest
   m_EditorClassIdentifier: 
-  areaName: Test Area
-  longDescription: You enter a Test Room with a long description.
-  shortDescription: You are in Test Room.
-  visited: 1
-  north: {fileID: 11400000, guid: e56c142ac01a9994e9d17027d9ab1815, type: 2}
-  south: {fileID: 0}
+  areaName: Mirkwood
+  longDescription: You've arrived to Mirkwood, a beautiful forest area, filled with
+    beautiful trees and flowers.
+  shortDescription: You're in Mirkwood
+  visited: 0
+  north: {fileID: 0}
+  south: {fileID: 11400000, guid: 00527327b011a1943bd9bf81646ca118, type: 2}
   east: {fileID: 0}
   west: {fileID: 0}
+  items: []

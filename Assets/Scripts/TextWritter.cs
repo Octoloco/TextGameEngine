@@ -26,11 +26,13 @@ public class TextWritter : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        textBox = GetComponent<TMP_Text>();
     }
 
     void Start()
     {
-        textBox = GetComponent<TMP_Text>();
+        
     }
 
     public void WriteText(string text)
